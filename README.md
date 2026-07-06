@@ -16,7 +16,7 @@ It keeps refactoring inside the normal review flow while giving teams a consiste
 
 1. Configure pipeline variables for CodeScene and at least one supported AI provider.
 2. Add the template reference and job definitions to your `azure-pipelines.yml`.
-3. Open a pull request and run the desired job from the pipeline UI.
+3. Go to **Pipelines → your pipeline → Run pipeline**, enter the PR ID and target branch, and click Run.
 
 ## Required: Configure pipeline variables
 
@@ -46,12 +46,25 @@ resources:
       ref: refs/tags/v1.0.0
       endpoint: <your-github-service-connection>
 
-trigger: none
+parameters:
+  - name: pr_id
+    type: string
+    displayName: "Pull Request ID"
+    default: ""
+  - name: target_branch
+    type: string
+    displayName: "Target branch (e.g. main)"
+    default: "main"
+  - name: print_logs
+    type: boolean
+    displayName: "Print agent logs"
+    default: false
 
-pr:
-  branches:
-    include:
-      - '*'
+trigger: none
+pr: none
+
+variables:
+  - group: <your-variable-group>
 
 pool:
   vmImage: ubuntu-latest
@@ -59,7 +72,6 @@ pool:
 jobs:
   - job: fix_code_health_degradations
     displayName: "CodeScene — Fix Code Health Degradations"
-    condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'))
     steps:
       - checkout: self
         persistCredentials: true
@@ -67,6 +79,9 @@ jobs:
         parameters:
           command: "skill:fix-code-health-degradations"
           model: "anthropic/claude-sonnet-4-20250514"
+          pr_id: ${{ parameters.pr_id }}
+          target_branch: ${{ parameters.target_branch }}
+          print_logs: ${{ parameters.print_logs }}
 ```
 
 Then run the job from the pipeline UI on any pull request.
@@ -105,51 +120,6 @@ The agent includes two pre-built refactoring skills:
 | `REFACTORING_AGENT_VERSION` | Version of the agent to use | No |
 
 Template parameters (`command`, `model`, `version`) are set per job in your pipeline YAML.
-
-## Example: Multiple pre-configured jobs
-
-```yaml
-resources:
-  repositories:
-    - repository: cs-agent
-      type: github
-      name: codescene-oss/pr-refactoring-agent-azure
-      ref: refs/tags/v1.0.0
-      endpoint: <your-github-service-connection>
-
-trigger: none
-pr:
-  branches:
-    include: ['*']
-
-pool:
-  vmImage: ubuntu-latest
-
-jobs:
-  - job: fix_complexity
-    displayName: "CodeScene — Fix Complexity"
-    condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'))
-    steps:
-      - checkout: self
-        persistCredentials: true
-      - template: refactoring-agent.yml@cs-agent
-        parameters:
-          command: "skill:fix-code-health-degradations improve complexity"
-          model: "anthropic/claude-sonnet-4-20250514"
-
-  - job: uplift_readability
-    displayName: "CodeScene — Improve Readability"
-    condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'))
-    steps:
-      - checkout: self
-        persistCredentials: true
-      - template: refactoring-agent.yml@cs-agent
-        parameters:
-          command: "skill:uplift-code-health improve readability"
-          model: "anthropic/claude-sonnet-4-20250514"
-```
-
-Navigate to the pipeline for your PR and click **Run** on the job you want.
 
 ## Platform Support
 

@@ -14,12 +14,25 @@ resources:
       ref: refs/tags/v1.0.0
       endpoint: <your-github-service-connection>
 
-trigger: none
+parameters:
+  - name: pr_id
+    type: string
+    displayName: "Pull Request ID"
+    default: ""
+  - name: target_branch
+    type: string
+    displayName: "Target branch (e.g. main)"
+    default: "main"
+  - name: print_logs
+    type: boolean
+    displayName: "Print agent logs"
+    default: false
 
-pr:
-  branches:
-    include:
-      - '*'
+trigger: none
+pr: none
+
+variables:
+  - group: <your-variable-group>
 
 pool:
   vmImage: ubuntu-latest
@@ -27,7 +40,6 @@ pool:
 jobs:
   - job: fix_code_health_degradations
     displayName: "CodeScene — Fix Code Health Degradations"
-    condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'))
     steps:
       - checkout: self
         persistCredentials: true
@@ -35,3 +47,6 @@ jobs:
         parameters:
           command: "skill:fix-code-health-degradations"
           model: "anthropic/claude-sonnet-4-20250514"
+          pr_id: ${{ parameters.pr_id }}
+          target_branch: ${{ parameters.target_branch }}
+          print_logs: ${{ parameters.print_logs }}
