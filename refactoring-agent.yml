@@ -195,16 +195,17 @@ steps:
           codescene_access_token: $token,
           print_logs: $print_logs,
           tracking: { environment: "azure-pipelines" },
+          plugins: (["refactoring-reporter-apply"]
+            + (if $pr_id != "" then ["azure-pr-status-reporter"] else [] end)),
           provider: ({}
             + (if $anthropic_key != "" then { anthropic_api_key: $anthropic_key } else {} end)
-            + (if $openai_key     != "" then { openai_api_key: $openai_key }     else {} end)
+            + (if $openai_key != "" then { openai_api_key: $openai_key } else {} end)
             + (if $google_key     != "" then { google_api_key: $google_key }     else {} end)
             + (if $opencode_auth  != "" then { opencode_auth_json: $opencode_auth } else {} end))
         }
         + (if $onprem != "" then { codescene_onprem_url: $onprem } else {} end)
         + (if $pr_id != "" then {
             git: { base_ref: $base_ref },
-            plugins: ["azure-pr-status-reporter"],
             ci: {
               azure: {
                 token: $az_token,
