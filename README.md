@@ -90,9 +90,10 @@ Then run the job from the pipeline UI on any pull request.
 The template automatically:
 - Downloads the refactoring agent binary
 - Configures git
+- Loads the apply and Azure status reporters
 - Runs the refactoring
 - Pushes changes to the PR branch
-- Posts a comment thread when pull request context is available
+- Posts a comment thread with the result
 
 ## The quality of the agent depends on the model
 

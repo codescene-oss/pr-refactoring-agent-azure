@@ -195,8 +195,7 @@ steps:
           codescene_access_token: $token,
           print_logs: $print_logs,
           tracking: { environment: "azure-pipelines" },
-          plugins: (["refactoring-reporter-apply"]
-            + (if $pr_id != "" then ["azure-pr-status-reporter"] else [] end)),
+          plugins: ["refactoring-reporter-apply", "azure-pr-status-reporter"],
           provider: ({}
             + (if $anthropic_key != "" then { anthropic_api_key: $anthropic_key } else {} end)
             + (if $openai_key != "" then { openai_api_key: $openai_key } else {} end)
