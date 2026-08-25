@@ -7,7 +7,8 @@ It keeps refactoring inside the normal review flow while giving teams a consiste
 ## Features
 
 - **Automatic code health analysis** — Identifies technical debt and code smells
-- **AI-guided refactoring** — Uses state-of-the-art LLMs to suggest and apply improvements
+- **AI-guided refactoring** — Uses state-of-the-art LLMs to propose improvements through a read-only workflow
+- **Schema-validated application** — Validates the proposed change set before applying and committing it
 - **CodeScene integration** — Leverages CodeScene's battle-tested code health metrics
 - **PR-driven workflow** — Trigger refactorings directly from pull request pipelines
 - **Skill-based execution** — Pre-built refactoring skills for common scenarios
@@ -89,6 +90,7 @@ Then run the job from the pipeline UI on any pull request.
 The template automatically:
 - Downloads the refactoring agent binary
 - Configures git
+- Loads the apply and Azure status reporters
 - Runs the refactoring
 - Pushes changes to the PR branch
 - Posts a comment thread with the result
@@ -129,8 +131,9 @@ The template supports Linux runners (amd64, aarch64). Use `vmImage: ubuntu-lates
 
 1. **Download** — The template downloads the appropriate pre-built binary for your platform
 2. **Analyze** — CodeScene analyzes your code for health issues and technical debt
-3. **Refactor** — The AI model generates and applies improvements based on CodeScene's guidance
-4. **Commit** — Changes are automatically committed and pushed to your branch
+3. **Refactor** — The AI model proposes a schema-validated change set using CodeScene's guidance
+4. **Apply** — The embedded apply plugin validates and applies the proposed changes
+5. **Commit** — Changes are automatically committed and pushed to your branch
 
 ## License
 
