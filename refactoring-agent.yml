@@ -31,8 +31,8 @@ parameters:
     displayName: "AI model (e.g. anthropic/claude-sonnet-4-20250514)"
   - name: version
     type: string
-    default: "v1.1.6"
-    displayName: "Refactoring agent version (default: v1.1.6)"
+    default: "v1.1.7"
+    displayName: "Refactoring agent version (default: v1.1.7)"
   - name: pr_id
     type: string
     default: ""
