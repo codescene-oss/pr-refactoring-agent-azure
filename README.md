@@ -44,7 +44,7 @@ resources:
     - repository: cs-agent
       type: github
       name: codescene-oss/pr-refactoring-agent-azure
-      ref: refs/tags/v1.1.9
+      ref: refs/tags/v1.1.11
       endpoint: <your-github-service-connection>
 
 parameters:
